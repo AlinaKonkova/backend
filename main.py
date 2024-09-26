@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -20,3 +21,14 @@ async def receive_data(data: Data):
     with open('data.txt', 'a') as file:
         file.write(f'{data.data}\n')
     return {"message": "Данные получены"}
+
+@app.get("/api/data/get")
+async def send_data():
+    try:
+        with open('data.txt', 'r') as file:
+            content = file.read()
+        print('Данные успешно отправлены на фронтенд')
+        return JSONResponse(content={"data": content})
+    except FileNotFoundError:
+        print('Файл не найден')
+        return JSONResponse(content={"data": ""})
